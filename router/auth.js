@@ -11,9 +11,26 @@ router.get('/',(req,res)=>{
     res.send('hello world');
 })
 
+const token = new Map();
+
+
+router.post('/payment',async(req,res)=>{
+    const email = req.body.email;
+    const token_created = req.body.id;
+    if(token_created){
+        token.set(email,token_created);
+        // console.log(email + "   "+ token_created);
+        res.json({message : "Payment done successfully !!!", status : true});
+    }
+    else{
+        res.json({message : "Please try again ...", status : false});
+    }
+
+})
+
 router.post('/add',async (req,res)=>{
-    const {name , age, batch, mobile, email, fee} = req.body;
-    // const users = req.body;
+    const {name , age, batch, mobile, email,fee} = req.body;
+    console.log(req.body);
     if(!name || !age|| !batch|| !mobile|| !email){
         return res.json({message : "Please fill all details"})
     }
@@ -31,15 +48,18 @@ router.post('/add',async (req,res)=>{
 
     try{
         const userExist = await User.findOne({email:email,mobile:mobile});
-
+        console.log(token.has(email));
         if(userExist){
             return res.json({message : "user already exists"});
         }
-
+        if(!fee && !token.has(email)) {
+            return res.json({message : "first please pay fee"});
+        }
         const user = new User({name , age, batch, mobile, email})
 
         const userRegister = await user.save();
         if(userRegister){
+            token.delete(email);
             res.json({message:"Registered successfully !!"});
             res.redirect(303,session.url);
         }
