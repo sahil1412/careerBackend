@@ -20,6 +20,10 @@ const jobPost = new mongoose.Schema({
     endDate :{
         type : String,
         required : true
+    },
+    postDate :{
+        type : Date,
+        require : true
     }
 })
 

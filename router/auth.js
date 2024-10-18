@@ -52,8 +52,8 @@ router.post('/addPost',async (req,res)=>{
         if(postExist){
             return res.json({message : "job post already exists"});
         }
-        
-        const jobPost = new JobPost({jobTitle, jobDescription, experience, candidates, endDate})
+        const postDate = Date.now();
+        const jobPost = new JobPost({jobTitle, jobDescription, experience, candidates, endDate, postDate});
 
         const job = await jobPost.save();
         if(job){
