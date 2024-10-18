@@ -23,6 +23,21 @@ router.get('/',async (req,res)=>{
     }
 })
 
+router.get('/:Id',async (req,res)=>{
+    let Id = req.params.Id;
+    try{
+        const result =await JobPost.findOne({_id:Id});
+        
+        if(result){
+            res.json({result : result});
+        }
+
+    }
+    catch(err){
+        res.json({error : error})
+    }
+})
+
 const token = new Map();
 
 router.post('/addPost',async (req,res)=>{
