@@ -126,16 +126,25 @@ router.post("/signup",async(req,res) =>{
         }
         console.log(user);
         console.log(otp);
+        let msgOption = {
+            from : process.env.NUMBER,
+            to: `+91${phone}`,
+            body : `Your otp verification for ${username} is : ${otp}`
+        }
+        try{
+            await client.messages.create(msgOption)
+            .then(res.json({"msg" : "otp send to your number"}))
+            .done();
+        }
+        catch (err){
+            res.json({"msg" : "enter valid number"});
+        }
         // await client.messages
         // .create({
-        //     from : process.env.NUMBER,
-        //     to: `+91${phone}`,
-        //     body : `Your otp verification for ${username} is : ${otp}`
+            
         // })
-         
-        return res
-        .status(400)
-        .json({"token" :"token", "otp" : otp});
+        // .((then) => res.json({"msg" : "otp send to number"}))
+        // .done();
     } catch(e){
         return res.status(500).json({error:e.message});
     }
