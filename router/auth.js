@@ -19,7 +19,7 @@ router.get('/',async (req,res)=>{
 
     }
     catch(err){
-        res.json({error : error})
+        res.json({error : err})
     }
 })
 
@@ -34,7 +34,7 @@ router.get('/:Id',async (req,res)=>{
 
     }
     catch(err){
-        res.json({error : error})
+        res.json({error : err})
     }
 })
 
@@ -98,12 +98,13 @@ router.post('/addPost',async (req,res)=>{
 });
 
 
-let otp, user;
+let otp = '12345', user;
 
 router.post("/signup",async(req,res) =>{
     try{
-        const {phone} = req.body;
-        const existingUser = await User.findOne({phone});
+        console.log(req.body.phone);
+        const {username, phone, companyName, email, employeeSize } = req.body;
+        const existingUser = await User.findOne({phone : phone});
         if(existingUser){
             return res
             .status(400)
@@ -117,6 +118,8 @@ router.post("/signup",async(req,res) =>{
             email,
             employeeSize
         })
+
+
 
         let digits = "0123456789";
         otp = "";
@@ -132,9 +135,8 @@ router.post("/signup",async(req,res) =>{
             body : `Your otp verification for ${username} is : ${otp}`
         }
         try{
-            await client.messages.create(msgOption)
-            .then(res.json({"msg" : "otp send to your number"}))
-            .done();
+            await client.messages.create(msgOption);
+            return res.json({"msg" : "otp send to your number", "success" : true});
         }
         catch (err){
             res.json({"msg" : "enter valid number"});
@@ -153,16 +155,31 @@ router.post("/signup",async(req,res) =>{
 router.post("/signup/verify",async(req,res)=>{
     try{
         console.log(req.body);
-        const { phoneOTP } = req.body;
+        const { phoneOTP, emailOTP } = req.body;
 
-        if(otp != phoneOTP && phoneOTP != "12345"){
+        if(otp != phoneOTP){
             return res.status(400).json({msg : "Incorrect otp"});
         }
         user = await user.save();
-        res.status(200).json({msg : "user added successfully"});
-        otp = "";
+        return res.status(200).json({msg : "user added successfully"});
     } catch(e){
         res.status(500).json({error : e.message});
+    }
+})
+
+router.get("/list",async (req,res) =>{
+    try{
+        const result =await User.find({});
+        if(result){
+            res.json({result : result});
+        }
+        else{
+            res.json({result : null});
+        }
+
+    }
+    catch(err){
+        res.json({error : err})
     }
 })
 
