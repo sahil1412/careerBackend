@@ -135,7 +135,7 @@ router.post("/signup",async(req,res) =>{
          
         return res
         .status(400)
-        .json({"user" : user, "otp" : otp});
+        .json({"token" :"token", "otp" : otp});
     } catch(e){
         return res.status(500).json({error:e.message});
     }
@@ -144,15 +144,8 @@ router.post("/signup",async(req,res) =>{
 router.post("/signup/verify",async(req,res)=>{
     try{
         console.log(req.body);
-        const {username, phone, companyName, email, employeeSize, phoneOTP } = req.body;
-        user = new User({
-            username,
-            phone,
-            companyName,
-            email,
-            employeeSize
-        })
-        
+        const { phoneOTP } = req.body;
+
         if(otp != phoneOTP && phoneOTP != "12345"){
             return res.status(400).json({msg : "Incorrect otp"});
         }
